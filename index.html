@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#f59e0b" />
-  <title>門松カウンター 共有版</title>
+  <title>門松カウンター 共有版+</title>
   <style>
     :root {
       --bg1: #fff7ed;
@@ -28,57 +28,45 @@
       background: linear-gradient(180deg, var(--bg2), var(--bg1));
       min-height: 100vh;
     }
-    .wrap {
-      max-width: 860px;
-      margin: 0 auto;
-      padding: 16px 16px 40px;
-    }
-    .hero {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      margin-bottom: 16px;
-    }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 16px 16px 40px; }
+    .hero { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
     .icon {
-      width: 58px;
-      height: 58px;
-      border-radius: 18px;
-      display: grid;
-      place-items: center;
-      background: #fff;
-      box-shadow: var(--shadow);
-      font-size: 28px;
+      width: 58px; height: 58px; border-radius: 18px; display: grid; place-items: center;
+      background: #fff; box-shadow: var(--shadow); font-size: 28px;
     }
     h1 { margin: 0; font-size: 30px; line-height: 1.2; }
     .sub { margin-top: 4px; color: var(--muted); font-size: 14px; }
     .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
     .badge {
-      padding: 6px 10px; border-radius: 999px;
-      background: rgba(245, 158, 11, 0.12); color: #92400e; font-size: 12px; font-weight: 700;
+      padding: 6px 10px; border-radius: 999px; background: rgba(245, 158, 11, 0.12);
+      color: #92400e; font-size: 12px; font-weight: 700;
     }
     .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 18px; }
+    .layout { display: grid; grid-template-columns: 1.25fr 0.9fr; gap: 16px; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
     .card {
       background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
       box-shadow: var(--shadow); padding: 16px;
     }
     .label { color: var(--muted); font-size: 13px; margin-bottom: 8px; }
     .big { font-size: 30px; font-weight: 800; line-height: 1.1; }
-    .layout { display: grid; grid-template-columns: 1.35fr 0.9fr; gap: 16px; }
     .section-title { font-size: 20px; font-weight: 800; margin: 0 0 6px; }
     .section-sub { margin: 0 0 14px; color: var(--muted); font-size: 14px; }
-    .players { display: grid; gap: 12px; }
-    .player { border: 1px solid #fde68a; background: #fff; border-radius: 18px; padding: 14px; }
+    .players, .history-list, .ranking-list { display: grid; gap: 12px; }
+    .player, .history-item, .ranking-item {
+      border: 1px solid #fde68a; background: #fff; border-radius: 18px; padding: 14px;
+    }
     .player.flash { box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.35); }
-    .player-head {
-      display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; margin-bottom: 12px;
+    .player-head, .ranking-item, .history-item {
+      display: flex; justify-content: space-between; gap: 12px; align-items: flex-start;
     }
     .name-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px; }
     .name { font-size: 22px; font-weight: 800; }
     .tag { font-size: 12px; font-weight: 700; padding: 4px 8px; border-radius: 999px; background: #f3f4f6; color: #374151; }
     .tag.top { background: #fef3c7; color: #92400e; }
     .score { font-size: 46px; font-weight: 900; line-height: 1; }
-    .score-label { color: var(--muted); font-size: 12px; margin-top: 4px; }
-    .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .score-label, .mini { color: var(--muted); font-size: 12px; margin-top: 4px; }
+    .btn-row, .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     button, input { font: inherit; }
     button { border: none; border-radius: 16px; padding: 14px 16px; cursor: pointer; font-weight: 800; min-height: 52px; }
     .btn-main { background: var(--accent); color: #fff; }
@@ -88,15 +76,21 @@
     .btn-ok { background: #ecfdf5; color: #166534; border: 1px solid #bbf7d0; }
     .side-stack { display: grid; gap: 16px; }
     .field { width: 100%; border: 1px solid #d1d5db; border-radius: 14px; padding: 14px; background: #fff; min-height: 48px; }
-    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .small-note { color: var(--muted); font-size: 14px; line-height: 1.7; }
     .status { font-size: 13px; margin-top: 8px; color: var(--muted); }
     .status.ok { color: #166534; }
     .status.ng { color: #991b1b; }
     .footer-note { margin-top: 14px; color: var(--muted); font-size: 12px; text-align: center; }
     code.inline { background: #fff7ed; padding: 2px 6px; border-radius: 8px; }
-    @media (max-width: 720px) {
-      .grid3, .layout, .btn-row, .field-row { grid-template-columns: 1fr; }
+    .rank-badge {
+      min-width: 38px; height: 38px; display: grid; place-items: center; border-radius: 999px;
+      background: #fff7ed; font-weight: 800;
+    }
+    .history-time { white-space: nowrap; color: var(--muted); font-size: 12px; }
+    .history-main { font-weight: 700; }
+    .muted-center { color: var(--muted); text-align: center; padding: 12px; }
+    @media (max-width: 820px) {
+      .grid3, .layout, .two-col, .btn-row, .field-row { grid-template-columns: 1fr; }
       .big { font-size: 26px; }
       .score { font-size: 40px; }
       h1 { font-size: 26px; }
@@ -109,15 +103,16 @@
     <div class="hero">
       <div class="icon">🎍</div>
       <div>
-        <h1>門松カウンター 共有版</h1>
-        <div class="sub">家族それぞれのスマホで開いても、同じ部屋の点数がリアルタイム同期されます。</div>
+        <h1>門松カウンター 共有版+</h1>
+        <div class="sub">URL自動入室、ランキング、発見履歴つき。年ごとに部屋コードを変えれば記録を残せます。</div>
       </div>
     </div>
 
     <div class="badges">
       <div class="badge">Firestore 共有版</div>
-      <div class="badge">リアルタイム同期</div>
-      <div class="badge">HTML 1枚</div>
+      <div class="badge">URL自動入室</div>
+      <div class="badge">ランキング</div>
+      <div class="badge">履歴</div>
     </div>
 
     <div class="grid3">
@@ -138,17 +133,20 @@
     <div class="layout">
       <div class="card">
         <h2 class="section-title">スコアボード</h2>
-        <p class="section-sub">同じ部屋コードを入れた家族全員のスマホで同期されます。</p>
+        <p class="section-sub">同じ部屋コードに入った家族全員のスマホで同期されます。</p>
         <div class="players" id="players"></div>
       </div>
 
       <div class="side-stack">
         <div class="card">
           <h2 class="section-title">部屋に入る</h2>
-          <p class="section-sub">例: <code class="inline">newyear2027</code></p>
+          <p class="section-sub">例: <code class="inline">oshogatsu2027</code></p>
           <input id="roomId" class="field" type="text" placeholder="部屋コード" />
           <div style="height:10px"></div>
-          <button class="btn-ok" id="connectBtn">この部屋に接続</button>
+          <div class="field-row">
+            <button class="btn-ok" id="connectBtn">この部屋に接続</button>
+            <button class="btn-sub" id="copyRoomUrlBtn">招待URLをコピー</button>
+          </div>
           <div class="status" id="connectStatus">Firebase設定前です。</div>
         </div>
 
@@ -162,23 +160,36 @@
 
         <div class="card">
           <h2 class="section-title">ゲーム操作</h2>
-          <p class="section-sub">部屋全体のスコアをまとめてリセットします。</p>
-          <button class="btn-sub" id="resetBtn">スコアをリセット</button>
+          <p class="section-sub">部屋全体のスコアと履歴をまとめてリセットします。</p>
+          <button class="btn-sub" id="resetBtn">スコアと履歴をリセット</button>
         </div>
 
         <div class="card">
-          <h2 class="section-title">最初にやること</h2>
+          <h2 class="section-title">使い方メモ</h2>
           <div class="small-note">
-            1. FirebaseでWebアプリを追加<br />
-            2. このHTML内の <code class="inline">firebaseConfig</code> を差し替える<br />
-            3. Firestoreを有効化する<br />
-            4. このファイルをGitHub Pagesに上げ直す
+            ・URLに <code class="inline">?room=oshogatsu2027</code> があれば自動入室します。<br />
+            ・部屋に入る欄は残してあるので、その場で別の年に切り替えられます。<br />
+            ・年ごとに部屋コードを変えれば、前年の結果もそのまま残せます。
           </div>
         </div>
       </div>
     </div>
 
-    <div class="footer-note">まずは家族限定の簡易版。公開ルールは後で絞れます。</div>
+    <div class="two-col">
+      <div class="card">
+        <h2 class="section-title">ランキング</h2>
+        <p class="section-sub">現在の順位です。同点なら同順位っぽく並びます。</p>
+        <div class="ranking-list" id="rankingList"></div>
+      </div>
+
+      <div class="card">
+        <h2 class="section-title">発見履歴</h2>
+        <p class="section-sub">だれがいつ見つけたかを最大50件まで保存します。</p>
+        <div class="history-list" id="historyList"></div>
+      </div>
+    </div>
+
+    <div class="footer-note">家族向けの簡易版です。公開範囲を絞りたい場合は、あとでFirestoreルールを強化できます。</div>
   </div>
 
   <script type="module">
@@ -193,21 +204,14 @@
       serverTimestamp
     } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
-    // ここをFirebaseコンソールの値に差し替えてください
-	const firebaseConfig = {
-	  apiKey: "AIzaSyDQC3Eq5La1OWjuaJafYX34NUaS_sBmqQg",
-	  authDomain: "kadomatsu-counter.firebaseapp.com",
-	  projectId: "kadomatsu-counter",
-	  storageBucket: "kadomatsu-counter.firebasestorage.app",
-	  messagingSenderId: "482720170445",
-	  appId: "1:482720170445:web:862d40152302298f120484"
-	};
-    const defaultPlayers = [
-      { id: makeId(), name: "パパ", score: 0 },
-      { id: makeId(), name: "ママ", score: 0 },
-      { id: makeId(), name: "こども1", score: 0 },
-      { id: makeId(), name: "こども2", score: 0 }
-    ];
+    const firebaseConfig = {
+      apiKey: "REPLACE_ME",
+      authDomain: "REPLACE_ME",
+      projectId: "REPLACE_ME",
+      storageBucket: "REPLACE_ME",
+      messagingSenderId: "REPLACE_ME",
+      appId: "REPLACE_ME"
+    };
 
     const ui = {
       totalScore: document.getElementById("totalScore"),
@@ -217,9 +221,12 @@
       roomId: document.getElementById("roomId"),
       newName: document.getElementById("newName"),
       connectBtn: document.getElementById("connectBtn"),
+      copyRoomUrlBtn: document.getElementById("copyRoomUrlBtn"),
       addPlayerBtn: document.getElementById("addPlayerBtn"),
       resetBtn: document.getElementById("resetBtn"),
-      connectStatus: document.getElementById("connectStatus")
+      connectStatus: document.getElementById("connectStatus"),
+      rankingList: document.getElementById("rankingList"),
+      historyList: document.getElementById("historyList")
     };
 
     let app = null;
@@ -227,15 +234,18 @@
     let roomRef = null;
     let currentRoomId = "";
     let unsubscribe = null;
-    let currentState = { players: [], lastScorerId: null };
+    let currentState = { players: [], lastScorerId: null, history: [] };
 
-    const localRoom = localStorage.getItem("kadomatsu-shared-room") || "newyear2027";
-    ui.roomId.value = localRoom;
+    const params = new URLSearchParams(location.search);
+    const roomFromURL = sanitizeRoomId(params.get("room") || "");
+    const roomFromLocal = sanitizeRoomId(localStorage.getItem("kadomatsu-shared-room") || "");
+    const initialRoom = roomFromURL || roomFromLocal || "oshogatsu2027";
+    ui.roomId.value = initialRoom;
 
     try {
       app = initializeApp(firebaseConfig);
       db = getFirestore(app);
-      setStatus("Firebase初期化OK。部屋コードを入れて接続してください。", true);
+      setStatus("Firebase初期化OK。部屋コードを確認して接続してください。", true);
     } catch (err) {
       console.error(err);
       setStatus("Firebase設定が未完了です。firebaseConfigを書き換えてください。", false);
@@ -246,6 +256,21 @@
       if (e.key === "Enter") connectRoom();
     });
 
+    ui.copyRoomUrlBtn.addEventListener("click", async () => {
+      const roomId = sanitizeRoomId(ui.roomId.value);
+      if (!roomId) {
+        alert("先に部屋コードを入れてください。");
+        return;
+      }
+      const url = `${location.origin}${location.pathname}?room=${encodeURIComponent(roomId)}`;
+      try {
+        await navigator.clipboard.writeText(url);
+        setStatus(`招待URLをコピーしました: ${roomId}`, true);
+      } catch {
+        prompt("このURLをコピーしてください", url);
+      }
+    });
+
     ui.addPlayerBtn.addEventListener("click", addPlayer);
     ui.newName.addEventListener("keydown", (e) => {
       if (e.key === "Enter") addPlayer();
@@ -253,10 +278,13 @@
 
     ui.resetBtn.addEventListener("click", async () => {
       if (!roomRef) return alert("先に部屋へ接続してください。");
+      const ok = confirm("この部屋のスコアと履歴をリセットしますか？");
+      if (!ok) return;
       const players = currentState.players.map(p => ({ ...p, score: 0 }));
       await updateDoc(roomRef, {
         players,
         lastScorerId: null,
+        history: [],
         updatedAt: serverTimestamp()
       });
     });
@@ -268,19 +296,42 @@
       const id = btn.dataset.id;
       const action = btn.dataset.action;
       const players = currentState.players.map(p => ({ ...p }));
+      const history = Array.isArray(currentState.history) ? [...currentState.history] : [];
       const player = players.find(p => p.id === id);
       if (!player) return;
 
       if (action === "add") {
         player.score += 1;
         currentState.lastScorerId = id;
+        history.unshift({
+          id: makeId(),
+          type: "add",
+          playerId: player.id,
+          playerName: player.name,
+          at: new Date().toISOString()
+        });
       } else if (action === "sub") {
         player.score = Math.max(0, player.score - 1);
+        history.unshift({
+          id: makeId(),
+          type: "sub",
+          playerId: player.id,
+          playerName: player.name,
+          at: new Date().toISOString()
+        });
       } else if (action === "remove") {
         const filtered = players.filter(p => p.id !== id);
+        history.unshift({
+          id: makeId(),
+          type: "remove",
+          playerId: player.id,
+          playerName: player.name,
+          at: new Date().toISOString()
+        });
         await updateDoc(roomRef, {
           players: filtered,
           lastScorerId: currentState.lastScorerId === id ? null : currentState.lastScorerId,
+          history: history.slice(0, 50),
           updatedAt: serverTimestamp()
         });
         return;
@@ -289,6 +340,7 @@
       await updateDoc(roomRef, {
         players,
         lastScorerId: currentState.lastScorerId ?? null,
+        history: history.slice(0, 50),
         updatedAt: serverTimestamp()
       });
     });
@@ -305,16 +357,24 @@
         return;
       }
 
+      ui.roomId.value = roomId;
       localStorage.setItem("kadomatsu-shared-room", roomId);
       currentRoomId = roomId;
       roomRef = doc(db, "kadomatsuRooms", roomId);
+      history.replaceState(null, "", `${location.pathname}?room=${encodeURIComponent(roomId)}`);
 
       const snap = await getDoc(roomRef);
       if (!snap.exists()) {
         await setDoc(roomRef, {
           roomId,
-          players: defaultPlayers,
+          players: [
+            { id: makeId(), name: "パパ", score: 0 },
+            { id: makeId(), name: "ママ", score: 0 },
+            { id: makeId(), name: "こども1", score: 0 },
+            { id: makeId(), name: "こども2", score: 0 }
+          ],
           lastScorerId: null,
+          history: [],
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp()
         });
@@ -325,7 +385,8 @@
         const data = docSnap.data();
         currentState = {
           players: Array.isArray(data?.players) ? data.players : [],
-          lastScorerId: data?.lastScorerId ?? null
+          lastScorerId: data?.lastScorerId ?? null,
+          history: Array.isArray(data?.history) ? data.history : []
         };
         render();
         setStatus(`部屋「${currentRoomId}」に接続中です。`, true);
@@ -340,8 +401,11 @@
       const name = ui.newName.value.trim();
       if (!name) return;
       const players = [...currentState.players, { id: makeId(), name, score: 0 }];
+      const history = Array.isArray(currentState.history) ? [...currentState.history] : [];
+      history.unshift({ id: makeId(), type: "join", playerId: "", playerName: name, at: new Date().toISOString() });
       await updateDoc(roomRef, {
         players,
+        history: history.slice(0, 50),
         updatedAt: serverTimestamp()
       });
       ui.newName.value = "";
@@ -350,6 +414,7 @@
     function render() {
       const players = currentState.players || [];
       const totalScore = players.reduce((sum, p) => sum + Number(p.score || 0), 0);
+      const ranking = [...players].sort((a, b) => Number(b.score || 0) - Number(a.score || 0));
       const max = Math.max(0, ...players.map(p => Number(p.score || 0)));
       const leaders = max > 0 ? players.filter(p => Number(p.score || 0) === max).map(p => p.id) : [];
       const leaderNames = players.filter(p => leaders.includes(p.id)).map(p => p.name);
@@ -358,6 +423,8 @@
       ui.playerCount.textContent = players.length;
       ui.leaderName.textContent = leaderNames.length ? leaderNames.join("・") : "まだなし";
       ui.players.innerHTML = "";
+      ui.rankingList.innerHTML = "";
+      ui.historyList.innerHTML = "";
 
       players.forEach((player) => {
         const isLeader = leaders.includes(player.id);
@@ -384,6 +451,64 @@
         `;
         ui.players.appendChild(el);
       });
+
+      if (ranking.length === 0) {
+        ui.rankingList.innerHTML = '<div class="muted-center">まだ参加者がいません。</div>';
+      } else {
+        ranking.forEach((player, index) => {
+          const row = document.createElement("div");
+          row.className = "ranking-item";
+          row.innerHTML = `
+            <div style="display:flex; gap:12px; align-items:center;">
+              <div class="rank-badge">${index + 1}</div>
+              <div>
+                <div class="history-main">${escapeHtml(player.name)}</div>
+                <div class="mini">${index === 0 && Number(player.score || 0) > 0 ? '現在トップ' : ' '}</div>
+              </div>
+            </div>
+            <div style="font-size:28px; font-weight:900;">${Number(player.score || 0)}</div>
+          `;
+          ui.rankingList.appendChild(row);
+        });
+      }
+
+      const historyItems = Array.isArray(currentState.history) ? currentState.history : [];
+      if (historyItems.length === 0) {
+        ui.historyList.innerHTML = '<div class="muted-center">まだ履歴はありません。</div>';
+      } else {
+        historyItems.forEach((item) => {
+          const row = document.createElement("div");
+          row.className = "history-item";
+          row.innerHTML = `
+            <div>
+              <div class="history-main">${escapeHtml(formatHistoryText(item))}</div>
+              <div class="mini">${escapeHtml(item.playerName || '')}</div>
+            </div>
+            <div class="history-time">${escapeHtml(formatTime(item.at))}</div>
+          `;
+          ui.historyList.appendChild(row);
+        });
+      }
+    }
+
+    function formatHistoryText(item) {
+      if (item.type === "add") return `${item.playerName} が門松を見つけた`;
+      if (item.type === "sub") return `${item.playerName} のポイントを1つ戻した`;
+      if (item.type === "remove") return `${item.playerName} を参加者から削除した`;
+      if (item.type === "join") return `${item.playerName} を参加者に追加した`;
+      return "更新";
+    }
+
+    function formatTime(iso) {
+      if (!iso) return "";
+      const d = new Date(iso);
+      if (Number.isNaN(d.getTime())) return "";
+      return d.toLocaleString("ja-JP", {
+        month: "numeric",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
     }
 
     function sanitizeRoomId(value) {
@@ -406,6 +531,10 @@
 
     function makeId() {
       return Math.random().toString(36).slice(2, 10);
+    }
+
+    if (roomFromURL && db) {
+      connectRoom();
     }
   </script>
 </body>
