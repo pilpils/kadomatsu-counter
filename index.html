@@ -363,21 +363,34 @@
       roomRef = doc(db, "kadomatsuRooms", roomId);
       history.replaceState(null, "", `${location.pathname}?room=${encodeURIComponent(roomId)}`);
 
+      const defaultPlayers = [
+        { id: makeId(), name: "パパ", score: 0 },
+        { id: makeId(), name: "ママ", score: 0 },
+        { id: makeId(), name: "こども1", score: 0 },
+        { id: makeId(), name: "こども2", score: 0 }
+      ];
+
       const snap = await getDoc(roomRef);
       if (!snap.exists()) {
         await setDoc(roomRef, {
           roomId,
-          players: [
-            { id: makeId(), name: "パパ", score: 0 },
-            { id: makeId(), name: "ママ", score: 0 },
-            { id: makeId(), name: "こども1", score: 0 },
-            { id: makeId(), name: "こども2", score: 0 }
-          ],
+          players: defaultPlayers,
           lastScorerId: null,
           history: [],
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp()
         });
+      } else {
+        const data = snap.data() || {};
+        const updates = {};
+        const hasPlayers = Array.isArray(data.players) && data.players.length > 0;
+        if (!hasPlayers) updates.players = defaultPlayers;
+        if (!Array.isArray(data.history)) updates.history = [];
+        if (!("lastScorerId" in data)) updates.lastScorerId = null;
+        if (Object.keys(updates).length > 0) {
+          updates.updatedAt = serverTimestamp();
+          await updateDoc(roomRef, updates);
+        }
       }
 
       if (unsubscribe) unsubscribe();
@@ -397,6 +410,27 @@
     }
 
     async function addPlayer() {
+      try {
+        if (!roomRef) return alert("先に部屋へ接続してください。");
+        const name = ui.newName.value.trim();
+        if (!name) return;
+        const basePlayers = Array.isArray(currentState.players) ? currentState.players : [];
+        const players = [...basePlayers, { id: makeId(), name, score: 0 }];
+        const history = Array.isArray(currentState.history) ? [...currentState.history] : [];
+        history.unshift({ id: makeId(), type: "join", playerId: "", playerName: name, at: new Date().toISOString() });
+        await updateDoc(roomRef, {
+          players,
+          history: history.slice(0, 50),
+          updatedAt: serverTimestamp()
+        });
+        ui.newName.value = "";
+      } catch (error) {
+        console.error(error);
+        alert("参加者の追加に失敗しました。Firestoreの設定や接続状態を確認してください。");
+      }
+    }
+
+    function render() {
       if (!roomRef) return alert("先に部屋へ接続してください。");
       const name = ui.newName.value.trim();
       if (!name) return;
