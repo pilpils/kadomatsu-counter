@@ -1,1 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>みつけたカウンター</title>
 
+<style>
+body{
+font-family:-apple-system,system-ui;
+background:#fff7ed;
+margin:0;
+padding:30px;
+text-align:center;
+}
+
+h1{
+font-size:32px;
+margin-bottom:10px;
+}
+
+button{
+font-size:24px;
+padding:20px 30px;
+border-radius:16px;
+border:none;
+background:#f59e0b;
+color:white;
+cursor:pointer;
+}
+
+.score{
+font-size:60px;
+margin:20px;
+font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<h1 id="title">みつけたカウンター</h1>
+
+<div class="score" id="score">0</div>
+
+<button id="btn">+1</button>
+
+<script>
+
+const params=new URLSearchParams(location.search)
+
+const item=params.get("item")||"something"
+
+document.getElementById("title").innerText=item+" カウンター"
+
+let score=0
+
+document.getElementById("btn").onclick=()=>{
+score++
+document.getElementById("score").innerText=score
+}
+
+</script>
+
+</body>
+</html>
