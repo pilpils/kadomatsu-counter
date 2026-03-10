@@ -234,7 +234,7 @@ const firebaseConfig = {
     let roomRef = null;
     let currentRoomId = "";
     let unsubscribe = null;
-    let currentState = { players: [], lastScorerId: null, history: [] };
+    let currentState = { players: [], lastScorerId: null, logItems: [] };
 
     const params = new URLSearchParams(location.search);
     const roomFromURL = sanitizeRoomId(params.get("room") || "");
@@ -248,7 +248,7 @@ const firebaseConfig = {
       setStatus("Firebase初期化OK。部屋コードを確認して接続してください。", true);
     } catch (err) {
       console.error(err);
-      setStatus("Firebase設定が未完了です。firebaseConfigを書き換えてください。", false);
+      setStatus("Firebase設定前です。firebaseConfigを書き換えてください。", false);
     }
 
     ui.connectBtn.addEventListener("click", connectRoom);
@@ -277,10 +277,14 @@ const firebaseConfig = {
     });
 
     ui.resetBtn.addEventListener("click", async () => {
-      if (!roomRef) return alert("先に部屋へ接続してください。");
+      if (!roomRef) {
+        alert("先に部屋へ接続してください。");
+        return;
+      }
       const ok = confirm("この部屋のスコアと履歴をリセットしますか？");
       if (!ok) return;
-      const players = currentState.players.map(p => ({ ...p, score: 0 }));
+
+      const players = currentState.players.map((p) => ({ ...p, score: 0 }));
       await updateDoc(roomRef, {
         players,
         lastScorerId: null,
@@ -295,15 +299,15 @@ const firebaseConfig = {
 
       const id = btn.dataset.id;
       const action = btn.dataset.action;
-      const players = currentState.players.map(p => ({ ...p }));
-      const history = Array.isArray(currentState.history) ? [...currentState.history] : [];
-      const player = players.find(p => p.id === id);
+      const players = currentState.players.map((p) => ({ ...p }));
+      const logItems = Array.isArray(currentState.logItems) ? [...currentState.logItems] : [];
+      const player = players.find((p) => p.id === id);
       if (!player) return;
 
       if (action === "add") {
         player.score += 1;
         currentState.lastScorerId = id;
-        history.unshift({
+        logItems.unshift({
           id: makeId(),
           type: "add",
           playerId: player.id,
@@ -312,7 +316,7 @@ const firebaseConfig = {
         });
       } else if (action === "sub") {
         player.score = Math.max(0, player.score - 1);
-        history.unshift({
+        logItems.unshift({
           id: makeId(),
           type: "sub",
           playerId: player.id,
@@ -320,8 +324,8 @@ const firebaseConfig = {
           at: new Date().toISOString()
         });
       } else if (action === "remove") {
-        const filtered = players.filter(p => p.id !== id);
-        history.unshift({
+        const filteredPlayers = players.filter((p) => p.id !== id);
+        logItems.unshift({
           id: makeId(),
           type: "remove",
           playerId: player.id,
@@ -329,9 +333,9 @@ const firebaseConfig = {
           at: new Date().toISOString()
         });
         await updateDoc(roomRef, {
-          players: filtered,
+          players: filteredPlayers,
           lastScorerId: currentState.lastScorerId === id ? null : currentState.lastScorerId,
-          history: history.slice(0, 50),
+          history: logItems.slice(0, 50),
           updatedAt: serverTimestamp()
         });
         return;
@@ -340,7 +344,7 @@ const firebaseConfig = {
       await updateDoc(roomRef, {
         players,
         lastScorerId: currentState.lastScorerId ?? null,
-        history: history.slice(0, 50),
+        history: logItems.slice(0, 50),
         updatedAt: serverTimestamp()
       });
     });
@@ -361,7 +365,7 @@ const firebaseConfig = {
       localStorage.setItem("kadomatsu-shared-room", roomId);
       currentRoomId = roomId;
       roomRef = doc(db, "kadomatsuRooms", roomId);
-      history.replaceState(null, "", `${location.pathname}?room=${encodeURIComponent(roomId)}`);
+      window.history.replaceState(null, "", `${location.pathname}?room=${encodeURIComponent(roomId)}`);
 
       const defaultPlayers = [
         { id: makeId(), name: "パパ", score: 0 },
@@ -394,33 +398,48 @@ const firebaseConfig = {
       }
 
       if (unsubscribe) unsubscribe();
-      unsubscribe = onSnapshot(roomRef, (docSnap) => {
-        const data = docSnap.data();
-        currentState = {
-          players: Array.isArray(data?.players) ? data.players : [],
-          lastScorerId: data?.lastScorerId ?? null,
-          history: Array.isArray(data?.history) ? data.history : []
-        };
-        render();
-        setStatus(`部屋「${currentRoomId}」に接続中です。`, true);
-      }, (error) => {
-        console.error(error);
-        setStatus("接続エラー。Firestoreのルールや設定を確認してください。", false);
-      });
+      unsubscribe = onSnapshot(
+        roomRef,
+        (docSnap) => {
+          const data = docSnap.data();
+          currentState = {
+            players: Array.isArray(data?.players) ? data.players : [],
+            lastScorerId: data?.lastScorerId ?? null,
+            logItems: Array.isArray(data?.history) ? data.history : []
+          };
+          render();
+          setStatus(`部屋「${currentRoomId}」に接続中です。`, true);
+        },
+        (error) => {
+          console.error(error);
+          setStatus("接続エラー。Firestoreのルールや設定を確認してください。", false);
+        }
+      );
     }
 
     async function addPlayer() {
       try {
-        if (!roomRef) return alert("先に部屋へ接続してください。");
+        if (!roomRef) {
+          alert("先に部屋へ接続してください。");
+          return;
+        }
         const name = ui.newName.value.trim();
         if (!name) return;
+
         const basePlayers = Array.isArray(currentState.players) ? currentState.players : [];
         const players = [...basePlayers, { id: makeId(), name, score: 0 }];
-        const history = Array.isArray(currentState.history) ? [...currentState.history] : [];
-        history.unshift({ id: makeId(), type: "join", playerId: "", playerName: name, at: new Date().toISOString() });
+        const logItems = Array.isArray(currentState.logItems) ? [...currentState.logItems] : [];
+        logItems.unshift({
+          id: makeId(),
+          type: "join",
+          playerId: "",
+          playerName: name,
+          at: new Date().toISOString()
+        });
+
         await updateDoc(roomRef, {
           players,
-          history: history.slice(0, 50),
+          history: logItems.slice(0, 50),
           updatedAt: serverTimestamp()
         });
         ui.newName.value = "";
@@ -431,27 +450,12 @@ const firebaseConfig = {
     }
 
     function render() {
-      if (!roomRef) return alert("先に部屋へ接続してください。");
-      const name = ui.newName.value.trim();
-      if (!name) return;
-      const players = [...currentState.players, { id: makeId(), name, score: 0 }];
-      const history = Array.isArray(currentState.history) ? [...currentState.history] : [];
-      history.unshift({ id: makeId(), type: "join", playerId: "", playerName: name, at: new Date().toISOString() });
-      await updateDoc(roomRef, {
-        players,
-        history: history.slice(0, 50),
-        updatedAt: serverTimestamp()
-      });
-      ui.newName.value = "";
-    }
-
-    function render() {
       const players = currentState.players || [];
       const totalScore = players.reduce((sum, p) => sum + Number(p.score || 0), 0);
       const ranking = [...players].sort((a, b) => Number(b.score || 0) - Number(a.score || 0));
-      const max = Math.max(0, ...players.map(p => Number(p.score || 0)));
-      const leaders = max > 0 ? players.filter(p => Number(p.score || 0) === max).map(p => p.id) : [];
-      const leaderNames = players.filter(p => leaders.includes(p.id)).map(p => p.name);
+      const max = Math.max(0, ...players.map((p) => Number(p.score || 0)));
+      const leaders = max > 0 ? players.filter((p) => Number(p.score || 0) === max).map((p) => p.id) : [];
+      const leaderNames = players.filter((p) => leaders.includes(p.id)).map((p) => p.name);
 
       ui.totalScore.textContent = totalScore;
       ui.playerCount.textContent = players.length;
@@ -470,8 +474,8 @@ const firebaseConfig = {
             <div>
               <div class="name-row">
                 <div class="name">${escapeHtml(player.name)}</div>
-                ${isLeader ? '<div class="tag top">トップ</div>' : ''}
-                ${isLastScorer ? '<div class="tag">いま見つけた！</div>' : ''}
+                ${isLeader ? '<div class="tag top">トップ</div>' : ""}
+                ${isLastScorer ? '<div class="tag">いま見つけた！</div>' : ""}
               </div>
               <div class="score">${Number(player.score || 0)}</div>
               <div class="score-label">ポイント</div>
@@ -497,7 +501,7 @@ const firebaseConfig = {
               <div class="rank-badge">${index + 1}</div>
               <div>
                 <div class="history-main">${escapeHtml(player.name)}</div>
-                <div class="mini">${index === 0 && Number(player.score || 0) > 0 ? '現在トップ' : ' '}</div>
+                <div class="mini">${index === 0 && Number(player.score || 0) > 0 ? "現在トップ" : " "}</div>
               </div>
             </div>
             <div style="font-size:28px; font-weight:900;">${Number(player.score || 0)}</div>
@@ -506,7 +510,7 @@ const firebaseConfig = {
         });
       }
 
-      const historyItems = Array.isArray(currentState.history) ? currentState.history : [];
+      const historyItems = Array.isArray(currentState.logItems) ? currentState.logItems : [];
       if (historyItems.length === 0) {
         ui.historyList.innerHTML = '<div class="muted-center">まだ履歴はありません。</div>';
       } else {
@@ -516,7 +520,7 @@ const firebaseConfig = {
           row.innerHTML = `
             <div>
               <div class="history-main">${escapeHtml(formatHistoryText(item))}</div>
-              <div class="mini">${escapeHtml(item.playerName || '')}</div>
+              <div class="mini">${escapeHtml(item.playerName || "")}</div>
             </div>
             <div class="history-time">${escapeHtml(formatTime(item.at))}</div>
           `;
