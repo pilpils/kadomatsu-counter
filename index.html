@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#f59e0b" />
-  <title>門松カウンター</title>
+  <title>門松カウンター 共有版</title>
   <style>
     :root {
       --bg1: #fff7ed;
@@ -15,14 +15,12 @@
       --line: #fed7aa;
       --accent: #f59e0b;
       --accent-dark: #d97706;
-      --green: #16a34a;
       --danger: #dc2626;
+      --ok: #16a34a;
       --shadow: 0 10px 25px rgba(0,0,0,0.08);
       --radius: 20px;
     }
-
     * { box-sizing: border-box; }
-
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
@@ -30,20 +28,17 @@
       background: linear-gradient(180deg, var(--bg2), var(--bg1));
       min-height: 100vh;
     }
-
     .wrap {
-      max-width: 760px;
+      max-width: 860px;
       margin: 0 auto;
       padding: 16px 16px 40px;
     }
-
     .hero {
       display: flex;
       align-items: center;
       gap: 14px;
       margin-bottom: 16px;
     }
-
     .icon {
       width: 58px;
       height: 58px;
@@ -54,219 +49,54 @@
       box-shadow: var(--shadow);
       font-size: 28px;
     }
-
-    h1 {
-      margin: 0;
-      font-size: 30px;
-      line-height: 1.2;
-    }
-
-    .sub {
-      margin-top: 4px;
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .badges {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 18px;
-    }
-
+    h1 { margin: 0; font-size: 30px; line-height: 1.2; }
+    .sub { margin-top: 4px; color: var(--muted); font-size: 14px; }
+    .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
     .badge {
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: rgba(245, 158, 11, 0.12);
-      color: #92400e;
-      font-size: 12px;
-      font-weight: 700;
+      padding: 6px 10px; border-radius: 999px;
+      background: rgba(245, 158, 11, 0.12); color: #92400e; font-size: 12px; font-weight: 700;
     }
-
-    .grid3 {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-bottom: 18px;
-    }
-
+    .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 18px; }
     .card {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 16px;
+      background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+      box-shadow: var(--shadow); padding: 16px;
     }
-
-    .label {
-      color: var(--muted);
-      font-size: 13px;
-      margin-bottom: 8px;
-    }
-
-    .big {
-      font-size: 30px;
-      font-weight: 800;
-      line-height: 1.1;
-    }
-
-    .layout {
-      display: grid;
-      grid-template-columns: 1.35fr 0.9fr;
-      gap: 16px;
-    }
-
-    .section-title {
-      font-size: 20px;
-      font-weight: 800;
-      margin: 0 0 6px;
-    }
-
-    .section-sub {
-      margin: 0 0 14px;
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .players {
-      display: grid;
-      gap: 12px;
-    }
-
-    .player {
-      border: 1px solid #fde68a;
-      background: #fff;
-      border-radius: 18px;
-      padding: 14px;
-      transition: transform 0.12s ease, box-shadow 0.12s ease;
-    }
-
-    .player.flash {
-      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.35);
-      transform: scale(1.01);
-    }
-
+    .label { color: var(--muted); font-size: 13px; margin-bottom: 8px; }
+    .big { font-size: 30px; font-weight: 800; line-height: 1.1; }
+    .layout { display: grid; grid-template-columns: 1.35fr 0.9fr; gap: 16px; }
+    .section-title { font-size: 20px; font-weight: 800; margin: 0 0 6px; }
+    .section-sub { margin: 0 0 14px; color: var(--muted); font-size: 14px; }
+    .players { display: grid; gap: 12px; }
+    .player { border: 1px solid #fde68a; background: #fff; border-radius: 18px; padding: 14px; }
+    .player.flash { box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.35); }
     .player-head {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: flex-start;
-      margin-bottom: 12px;
+      display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; margin-bottom: 12px;
     }
-
-    .name-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-
-    .name {
-      font-size: 22px;
-      font-weight: 800;
-    }
-
-    .tag {
-      font-size: 12px;
-      font-weight: 700;
-      padding: 4px 8px;
-      border-radius: 999px;
-      background: #f3f4f6;
-      color: #374151;
-    }
-
-    .tag.top {
-      background: #fef3c7;
-      color: #92400e;
-    }
-
-    .score {
-      font-size: 46px;
-      font-weight: 900;
-      line-height: 1;
-    }
-
-    .score-label {
-      color: var(--muted);
-      font-size: 12px;
-      margin-top: 4px;
-    }
-
-    .btn-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    button, input {
-      font: inherit;
-    }
-
-    button {
-      border: none;
-      border-radius: 16px;
-      padding: 14px 16px;
-      cursor: pointer;
-      font-weight: 800;
-      min-height: 52px;
-    }
-
-    .btn-main {
-      background: var(--accent);
-      color: #fff;
-    }
-
+    .name-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px; }
+    .name { font-size: 22px; font-weight: 800; }
+    .tag { font-size: 12px; font-weight: 700; padding: 4px 8px; border-radius: 999px; background: #f3f4f6; color: #374151; }
+    .tag.top { background: #fef3c7; color: #92400e; }
+    .score { font-size: 46px; font-weight: 900; line-height: 1; }
+    .score-label { color: var(--muted); font-size: 12px; margin-top: 4px; }
+    .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    button, input { font: inherit; }
+    button { border: none; border-radius: 16px; padding: 14px 16px; cursor: pointer; font-weight: 800; min-height: 52px; }
+    .btn-main { background: var(--accent); color: #fff; }
     .btn-main:active { background: var(--accent-dark); }
-
-    .btn-sub {
-      background: #fff;
-      color: var(--text);
-      border: 1px solid #d1d5db;
-    }
-
-    .btn-danger {
-      background: #fff;
-      color: var(--danger);
-      border: 1px solid #fecaca;
-      min-height: 42px;
-      padding: 10px 14px;
-    }
-
-    .side-stack {
-      display: grid;
-      gap: 16px;
-    }
-
-    .field {
-      width: 100%;
-      border: 1px solid #d1d5db;
-      border-radius: 14px;
-      padding: 14px;
-      background: #fff;
-      min-height: 48px;
-    }
-
-    .small-note {
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.7;
-    }
-
-    .footer-note {
-      margin-top: 14px;
-      color: var(--muted);
-      font-size: 12px;
-      text-align: center;
-    }
-
+    .btn-sub { background: #fff; color: var(--text); border: 1px solid #d1d5db; }
+    .btn-danger { background: #fff; color: var(--danger); border: 1px solid #fecaca; min-height: 42px; padding: 10px 14px; }
+    .btn-ok { background: #ecfdf5; color: #166534; border: 1px solid #bbf7d0; }
+    .side-stack { display: grid; gap: 16px; }
+    .field { width: 100%; border: 1px solid #d1d5db; border-radius: 14px; padding: 14px; background: #fff; min-height: 48px; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .small-note { color: var(--muted); font-size: 14px; line-height: 1.7; }
+    .status { font-size: 13px; margin-top: 8px; color: var(--muted); }
+    .status.ok { color: #166534; }
+    .status.ng { color: #991b1b; }
+    .footer-note { margin-top: 14px; color: var(--muted); font-size: 12px; text-align: center; }
+    code.inline { background: #fff7ed; padding: 2px 6px; border-radius: 8px; }
     @media (max-width: 720px) {
-      .grid3,
-      .layout,
-      .btn-row {
-        grid-template-columns: 1fr;
-      }
-
+      .grid3, .layout, .btn-row, .field-row { grid-template-columns: 1fr; }
       .big { font-size: 26px; }
       .score { font-size: 40px; }
       h1 { font-size: 26px; }
@@ -279,15 +109,15 @@
     <div class="hero">
       <div class="icon">🎍</div>
       <div>
-        <h1>門松カウンター</h1>
-        <div class="sub">家族で門松を見つけたら、その人のボタンを押すだけ。</div>
+        <h1>門松カウンター 共有版</h1>
+        <div class="sub">家族それぞれのスマホで開いても、同じ部屋の点数がリアルタイム同期されます。</div>
       </div>
     </div>
 
     <div class="badges">
-      <div class="badge">HTML 1枚版</div>
-      <div class="badge">iPhoneで使いやすい</div>
-      <div class="badge">ローカル保存</div>
+      <div class="badge">Firestore 共有版</div>
+      <div class="badge">リアルタイム同期</div>
+      <div class="badge">HTML 1枚</div>
     </div>
 
     <div class="grid3">
@@ -308,14 +138,23 @@
     <div class="layout">
       <div class="card">
         <h2 class="section-title">スコアボード</h2>
-        <p class="section-sub">見つけた人の「門松 +1」を押してください。</p>
+        <p class="section-sub">同じ部屋コードを入れた家族全員のスマホで同期されます。</p>
         <div class="players" id="players"></div>
       </div>
 
       <div class="side-stack">
         <div class="card">
+          <h2 class="section-title">部屋に入る</h2>
+          <p class="section-sub">例: <code class="inline">newyear2027</code></p>
+          <input id="roomId" class="field" type="text" placeholder="部屋コード" />
+          <div style="height:10px"></div>
+          <button class="btn-ok" id="connectBtn">この部屋に接続</button>
+          <div class="status" id="connectStatus">Firebase設定前です。</div>
+        </div>
+
+        <div class="card">
           <h2 class="section-title">参加者を追加</h2>
-          <p class="section-sub">途中参加にも対応できます。</p>
+          <p class="section-sub">追加した人は全員のスマホに反映されます。</p>
           <input id="newName" class="field" type="text" placeholder="例: おじいちゃん" />
           <div style="height:10px"></div>
           <button class="btn-main" id="addPlayerBtn">参加者を追加</button>
@@ -323,84 +162,208 @@
 
         <div class="card">
           <h2 class="section-title">ゲーム操作</h2>
-          <p class="section-sub">出発前や翌年のために、スコアをリセットできます。</p>
+          <p class="section-sub">部屋全体のスコアをまとめてリセットします。</p>
           <button class="btn-sub" id="resetBtn">スコアをリセット</button>
         </div>
 
         <div class="card">
-          <h2 class="section-title">いまの仕様</h2>
+          <h2 class="section-title">最初にやること</h2>
           <div class="small-note">
-            ・1台のスマホを家族で回して使う想定です。<br />
-            ・点数はこの端末のブラウザに保存されます。<br />
-            ・通信なしでも動きます。<br />
-            ・各自のスマホで同時共有する版は、次の段階で作れます。
+            1. FirebaseでWebアプリを追加<br />
+            2. このHTML内の <code class="inline">firebaseConfig</code> を差し替える<br />
+            3. Firestoreを有効化する<br />
+            4. このファイルをGitHub Pagesに上げ直す
           </div>
         </div>
       </div>
     </div>
 
-    <div class="footer-note">ホーム画面に追加すると、アプリっぽく使えます。</div>
+    <div class="footer-note">まずは家族限定の簡易版。公開ルールは後で絞れます。</div>
   </div>
 
-  <script>
-    const STORAGE_KEY = "kadomatsu-counter-html-v1";
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+    import {
+      getFirestore,
+      doc,
+      getDoc,
+      setDoc,
+      onSnapshot,
+      updateDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
-    const defaultState = {
-      players: [
-        { id: 1, name: "パパ", score: 0 },
-        { id: 2, name: "ママ", score: 0 },
-        { id: 3, name: "こども1", score: 0 },
-        { id: 4, name: "こども2", score: 0 }
-      ],
-      lastScorerId: null
+    // ここをFirebaseコンソールの値に差し替えてください
+	const firebaseConfig = {
+	  apiKey: "AIzaSyDQC3Eq5La1OWjuaJafYX34NUaS_sBmqQg",
+	  authDomain: "kadomatsu-counter.firebaseapp.com",
+	  projectId: "kadomatsu-counter",
+	  storageBucket: "kadomatsu-counter.firebasestorage.app",
+	  messagingSenderId: "482720170445",
+	  appId: "1:482720170445:web:862d40152302298f120484"
+	};
+    const defaultPlayers = [
+      { id: makeId(), name: "パパ", score: 0 },
+      { id: makeId(), name: "ママ", score: 0 },
+      { id: makeId(), name: "こども1", score: 0 },
+      { id: makeId(), name: "こども2", score: 0 }
+    ];
+
+    const ui = {
+      totalScore: document.getElementById("totalScore"),
+      playerCount: document.getElementById("playerCount"),
+      leaderName: document.getElementById("leaderName"),
+      players: document.getElementById("players"),
+      roomId: document.getElementById("roomId"),
+      newName: document.getElementById("newName"),
+      connectBtn: document.getElementById("connectBtn"),
+      addPlayerBtn: document.getElementById("addPlayerBtn"),
+      resetBtn: document.getElementById("resetBtn"),
+      connectStatus: document.getElementById("connectStatus")
     };
 
-    let state = loadState();
+    let app = null;
+    let db = null;
+    let roomRef = null;
+    let currentRoomId = "";
+    let unsubscribe = null;
+    let currentState = { players: [], lastScorerId: null };
 
-    function loadState() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return structuredClone(defaultState);
-        const parsed = JSON.parse(raw);
-        if (!parsed || !Array.isArray(parsed.players)) return structuredClone(defaultState);
-        return {
-          players: parsed.players,
-          lastScorerId: parsed.lastScorerId ?? null
-        };
-      } catch (e) {
-        return structuredClone(defaultState);
+    const localRoom = localStorage.getItem("kadomatsu-shared-room") || "newyear2027";
+    ui.roomId.value = localRoom;
+
+    try {
+      app = initializeApp(firebaseConfig);
+      db = getFirestore(app);
+      setStatus("Firebase初期化OK。部屋コードを入れて接続してください。", true);
+    } catch (err) {
+      console.error(err);
+      setStatus("Firebase設定が未完了です。firebaseConfigを書き換えてください。", false);
+    }
+
+    ui.connectBtn.addEventListener("click", connectRoom);
+    ui.roomId.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") connectRoom();
+    });
+
+    ui.addPlayerBtn.addEventListener("click", addPlayer);
+    ui.newName.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") addPlayer();
+    });
+
+    ui.resetBtn.addEventListener("click", async () => {
+      if (!roomRef) return alert("先に部屋へ接続してください。");
+      const players = currentState.players.map(p => ({ ...p, score: 0 }));
+      await updateDoc(roomRef, {
+        players,
+        lastScorerId: null,
+        updatedAt: serverTimestamp()
+      });
+    });
+
+    ui.players.addEventListener("click", async (e) => {
+      const btn = e.target.closest("button[data-action]");
+      if (!btn || !roomRef) return;
+
+      const id = btn.dataset.id;
+      const action = btn.dataset.action;
+      const players = currentState.players.map(p => ({ ...p }));
+      const player = players.find(p => p.id === id);
+      if (!player) return;
+
+      if (action === "add") {
+        player.score += 1;
+        currentState.lastScorerId = id;
+      } else if (action === "sub") {
+        player.score = Math.max(0, player.score - 1);
+      } else if (action === "remove") {
+        const filtered = players.filter(p => p.id !== id);
+        await updateDoc(roomRef, {
+          players: filtered,
+          lastScorerId: currentState.lastScorerId === id ? null : currentState.lastScorerId,
+          updatedAt: serverTimestamp()
+        });
+        return;
       }
+
+      await updateDoc(roomRef, {
+        players,
+        lastScorerId: currentState.lastScorerId ?? null,
+        updatedAt: serverTimestamp()
+      });
+    });
+
+    async function connectRoom() {
+      if (!db) {
+        alert("Firebase設定がまだです。先に firebaseConfig を入れてください。");
+        return;
+      }
+
+      const roomId = sanitizeRoomId(ui.roomId.value);
+      if (!roomId) {
+        alert("部屋コードを入れてください。");
+        return;
+      }
+
+      localStorage.setItem("kadomatsu-shared-room", roomId);
+      currentRoomId = roomId;
+      roomRef = doc(db, "kadomatsuRooms", roomId);
+
+      const snap = await getDoc(roomRef);
+      if (!snap.exists()) {
+        await setDoc(roomRef, {
+          roomId,
+          players: defaultPlayers,
+          lastScorerId: null,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+      }
+
+      if (unsubscribe) unsubscribe();
+      unsubscribe = onSnapshot(roomRef, (docSnap) => {
+        const data = docSnap.data();
+        currentState = {
+          players: Array.isArray(data?.players) ? data.players : [],
+          lastScorerId: data?.lastScorerId ?? null
+        };
+        render();
+        setStatus(`部屋「${currentRoomId}」に接続中です。`, true);
+      }, (error) => {
+        console.error(error);
+        setStatus("接続エラー。Firestoreのルールや設定を確認してください。", false);
+      });
     }
 
-    function saveState() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    }
-
-    function getLeaders() {
-      const max = Math.max(0, ...state.players.map(p => p.score));
-      if (max === 0) return [];
-      return state.players.filter(p => p.score === max).map(p => p.id);
+    async function addPlayer() {
+      if (!roomRef) return alert("先に部屋へ接続してください。");
+      const name = ui.newName.value.trim();
+      if (!name) return;
+      const players = [...currentState.players, { id: makeId(), name, score: 0 }];
+      await updateDoc(roomRef, {
+        players,
+        updatedAt: serverTimestamp()
+      });
+      ui.newName.value = "";
     }
 
     function render() {
-      const totalScore = state.players.reduce((sum, p) => sum + p.score, 0);
-      const leaders = getLeaders();
-      const leaderNames = state.players.filter(p => leaders.includes(p.id)).map(p => p.name);
+      const players = currentState.players || [];
+      const totalScore = players.reduce((sum, p) => sum + Number(p.score || 0), 0);
+      const max = Math.max(0, ...players.map(p => Number(p.score || 0)));
+      const leaders = max > 0 ? players.filter(p => Number(p.score || 0) === max).map(p => p.id) : [];
+      const leaderNames = players.filter(p => leaders.includes(p.id)).map(p => p.name);
 
-      document.getElementById("totalScore").textContent = totalScore;
-      document.getElementById("playerCount").textContent = state.players.length;
-      document.getElementById("leaderName").textContent = leaderNames.length ? leaderNames.join("・") : "まだなし";
+      ui.totalScore.textContent = totalScore;
+      ui.playerCount.textContent = players.length;
+      ui.leaderName.textContent = leaderNames.length ? leaderNames.join("・") : "まだなし";
+      ui.players.innerHTML = "";
 
-      const container = document.getElementById("players");
-      container.innerHTML = "";
-
-      state.players.forEach(player => {
+      players.forEach((player) => {
         const isLeader = leaders.includes(player.id);
-        const isLastScorer = state.lastScorerId === player.id;
-
+        const isLastScorer = currentState.lastScorerId === player.id;
         const el = document.createElement("div");
         el.className = "player" + (isLastScorer ? " flash" : "");
-
         el.innerHTML = `
           <div class="player-head">
             <div>
@@ -409,7 +372,7 @@
                 ${isLeader ? '<div class="tag top">トップ</div>' : ''}
                 ${isLastScorer ? '<div class="tag">いま見つけた！</div>' : ''}
               </div>
-              <div class="score">${player.score}</div>
+              <div class="score">${Number(player.score || 0)}</div>
               <div class="score-label">ポイント</div>
             </div>
             <button class="btn-danger" data-action="remove" data-id="${player.id}">削除</button>
@@ -419,11 +382,17 @@
             <button class="btn-sub" data-action="sub" data-id="${player.id}">1つ戻す</button>
           </div>
         `;
-
-        container.appendChild(el);
+        ui.players.appendChild(el);
       });
+    }
 
-      saveState();
+    function sanitizeRoomId(value) {
+      return String(value || "").trim().toLowerCase().replace(/[^a-z0-9_-]/g, "").slice(0, 40);
+    }
+
+    function setStatus(message, ok) {
+      ui.connectStatus.textContent = message;
+      ui.connectStatus.className = `status ${ok ? "ok" : "ng"}`;
     }
 
     function escapeHtml(str) {
@@ -435,49 +404,9 @@
         .replaceAll("'", "&#39;");
     }
 
-    function addPlayer() {
-      const input = document.getElementById("newName");
-      const name = input.value.trim();
-      if (!name) return;
-      state.players.push({ id: Date.now(), name, score: 0 });
-      input.value = "";
-      render();
+    function makeId() {
+      return Math.random().toString(36).slice(2, 10);
     }
-
-    document.getElementById("addPlayerBtn").addEventListener("click", addPlayer);
-    document.getElementById("newName").addEventListener("keydown", (e) => {
-      if (e.key === "Enter") addPlayer();
-    });
-
-    document.getElementById("resetBtn").addEventListener("click", () => {
-      state.players = state.players.map(player => ({ ...player, score: 0 }));
-      state.lastScorerId = null;
-      render();
-    });
-
-    document.getElementById("players").addEventListener("click", (e) => {
-      const btn = e.target.closest("button[data-action]");
-      if (!btn) return;
-
-      const id = Number(btn.dataset.id);
-      const action = btn.dataset.action;
-      const player = state.players.find(p => p.id === id);
-      if (!player) return;
-
-      if (action === "add") {
-        player.score += 1;
-        state.lastScorerId = id;
-      } else if (action === "sub") {
-        player.score = Math.max(0, player.score - 1);
-      } else if (action === "remove") {
-        state.players = state.players.filter(p => p.id !== id);
-        if (state.lastScorerId === id) state.lastScorerId = null;
-      }
-
-      render();
-    });
-
-    render();
   </script>
 </body>
 </html>
