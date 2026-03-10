@@ -351,7 +351,7 @@
         <div class="big" id="playerCount">0</div>
       </div>
       <div class="card">
-        <div class="label">現在トップ</div>
+        <div class="label">門松王</div>
         <div class="big" id="leaderName">まだなし</div>
       </div>
     </div>
@@ -737,7 +737,7 @@ const firebaseConfig = {
             <div class="rank-badge">${index + 1}</div>
             <div>
               <div class="history-main">${escapeHtml(player.name)}</div>
-              <div class="mini">${index === 0 && Number(player.score || 0) > 0 ? "現在トップ" : " "}</div>
+              <div class="mini">${index === 0 && Number(player.score || 0) > 0 ? "門松王" : " "}</div>
             </div>
           </div>
           <div style="font-size:28px; font-weight:900;">${Number(player.score || 0)}</div>
@@ -760,7 +760,7 @@ const firebaseConfig = {
         row.className = "history-item";
         row.innerHTML = `
           <div>
-            <div class="history-main">${index + 1}件目: ${escapeHtml(formatHistoryText(item))}</div>
+            <div class="history-main">🎍 ${index + 1}本目: ${escapeHtml(formatHistoryText(item))}</div>
             <div class="mini">${escapeHtml(item.playerName || "")}</div>
           </div>
           <div class="history-time">${escapeHtml(formatTime(item.at))}</div>
