@@ -366,7 +366,7 @@
       <div class="side-stack">
         <div class="card">
           <h2 class="section-title">部屋に入る</h2>
-          <p class="section-sub">例: <code class="inline">oshogatsu2027</code></p>
+          <p class="section-sub">例: <code class="inline">newyear2027</code></p>
           <input id="roomId" class="field" type="text" placeholder="部屋コード" />
           <div style="height:10px"></div>
           <div class="field-row">
@@ -393,7 +393,7 @@
         <div class="card">
           <h2 class="section-title">使い方メモ</h2>
           <div class="small-note">
-            ・URLに <code class="inline">?room=oshogatsu2027</code> があれば自動入室します。<br />
+            ・URLに <code class="inline">?room=newyear2027</code> があれば自動入室します。<br />
             ・部屋に入る欄は残してあるので、その場で別の年に切り替えられます。<br />
             ・年ごとに部屋コードを変えれば、前年の結果もそのまま残せます。
           </div>
@@ -439,12 +439,12 @@ const firebaseConfig = {
   appId: "1:482720170445:web:862d40152302298f120484"
 };
 
-    const DEFAULT_ROOM = "oshogatsu2027";
+    const DEFAULT_ROOM = "newyear2027";
     const ROOM_STORAGE_KEY = "kadomatsu-shared-room";
     const ROOM_COLLECTION = "kadomatsuRooms";
     const MAX_HISTORY = 50;
 
-    const DEFAULT_PLAYER_NAMES = ["パパ", "ママ", "こども1", "こども2"];
+    const DEFAULT_PLAYER_NAMES = ["ピル", "ミーミー", "タクロ"];
 
     const ui = {
       totalScore: document.getElementById("totalScore"),
