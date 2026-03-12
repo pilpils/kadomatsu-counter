@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#f59e0b" />
+  <title>門松カウンター 個人モード</title>
+  <style>
+    :root {
+      --bg1: #fff7ed;
+      --bg2: #fffbeb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --line: #fed7aa;
+      --accent: #f59e0b;
+      --accent-dark: #d97706;
+      --danger: #dc2626;
+      --ok: #16a34a;
+      --shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      --radius: 20px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+      color: var(--text);
+      background: linear-gradient(180deg, var(--bg2), var(--bg1));
+      min-height: 100vh;
+    }
+
+    .wrap {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 16px 16px 40px;
+    }
+
+    .hero {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .icon {
+      width: 58px;
+      height: 58px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      background: #fff;
+      box-shadow: var(--shadow);
+      font-size: 28px;
+    }
+
+    h1 { margin: 0; font-size: 30px; line-height: 1.2; }
+    .sub { margin-top: 4px; color: var(--muted); font-size: 14px; }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .badge {
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(245, 158, 11, 0.12);
+      color: #92400e;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .grid3, .two-col {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+
+    .label { color: var(--muted); font-size: 13px; margin-bottom: 8px; }
+    .big { font-size: 30px; font-weight: 800; line-height: 1.1; }
+    .section-title { font-size: 20px; font-weight: 800; margin: 0 0 6px; }
+    .section-sub { margin: 0 0 14px; color: var(--muted); font-size: 14px; }
+
+    .field, button, select { font: inherit; }
+
+    .field, select {
+      width: 100%;
+      border: 1px solid #d1d5db;
+      border-radius: 14px;
+      padding: 14px;
+      background: #fff;
+      min-height: 48px;
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    button {
+      border: none;
+      border-radius: 16px;
+      padding: 14px 16px;
+      cursor: pointer;
+      font-weight: 800;
+      min-height: 52px;
+    }
+
+    .btn-main { background: var(--accent); color: #fff; }
+    .btn-main:active { background: var(--accent-dark); }
+    .btn-sub { background: #fff; color: var(--text); border: 1px solid #d1d5db; }
+    .btn-ok { background: #ecfdf5; color: #166534; border: 1px solid #bbf7d0; }
+    .btn-danger { background: #fff; color: var(--danger); border: 1px solid #fecaca; }
+
+    .status { font-size: 13px; margin-top: 8px; color: var(--muted); }
+    .status.ok { color: #166534; }
+    .status.ng { color: #991b1b; }
+
+    .scoreboard, .history-list, .ranking-list { display: grid; gap: 12px; }
+
+    .player, .history-item, .ranking-item {
+      border: 1px solid #fde68a;
+      background: #fff;
+      border-radius: 18px;
+      padding: 14px;
+    }
+
+    .player.flash { box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.35); }
+
+    .player-head, .history-item, .ranking-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .name-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .name { font-size: 22px; font-weight: 800; }
+    .tag {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #f3f4f6;
+      color: #374151;
+    }
+    .tag.top { background: #fef3c7; color: #92400e; }
+    .score { font-size: 46px; font-weight: 900; line-height: 1; }
+    .score-label, .mini { color: var(--muted); font-size: 12px; margin-top: 4px; }
+
+    .rank-badge {
+      min-width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      background: #fff7ed;
+      font-weight: 800;
+    }
+
+    .history-time {
+      white-space: nowrap;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .history-main { font-weight: 700; }
+    .muted-center { color: var(--muted); text-align: center; padding: 12px; }
+    .note { color: var(--muted); font-size: 14px; line-height: 1.7; }
+    code.inline { background: #fff7ed; padding: 2px 6px; border-radius: 8px; }
+
+    @media (max-width: 820px) {
+      .grid3, .two-col, .layout, .field-row { grid-template-columns: 1fr; }
+      .big { font-size: 26px; }
+      .score { font-size: 40px; }
+      h1 { font-size: 26px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <div class="icon">🎍</div>
+      <div>
+        <h1>門松カウンター 個人モード</h1>
+        <div class="sub">自分の門松ボタンだけを表示する別アプリ版。URLに人名を入れると、その人専用で開けます。</div>
+      </div>
+    </div>
+
+    <div class="badges">
+      <div class="badge">別アプリ版</div>
+      <div class="badge">自分のボタンだけ</div>
+      <div class="badge">Firestore 共有</div>
+      <div class="badge">URL自動設定</div>
+    </div>
+
+    <div class="grid3">
+      <div class="card">
+        <div class="label">見つけた門松の合計</div>
+        <div class="big" id="totalScore">0</div>
+      </div>
+      <div class="card">
+        <div class="label">参加人数</div>
+        <div class="big" id="playerCount">0</div>
+      </div>
+      <div class="card">
+        <div class="label">門松王</div>
+        <div class="big" id="leaderName">まだなし</div>
+      </div>
+    </div>
+
+    <div class="layout">
+      <div class="card">
+        <h2 class="section-title">あなたの門松ボタン</h2>
+        <p class="section-sub">ここには自分のボタンだけを表示します。</p>
+        <div id="personalArea"></div>
+      </div>
+
+      <div class="card">
+        <h2 class="section-title">入室設定</h2>
+        <p class="section-sub">部屋と自分の名前を指定して接続します。</p>
+        <div class="field-row">
+          <input id="roomId" class="field" type="text" placeholder="部屋コード" />
+          <select id="selfName">
+            <option value="">自分を選ぶ</option>
+          </select>
+        </div>
+        <div style="height:10px"></div>
+        <div class="field-row">
+          <button class="btn-ok" id="connectBtn">接続</button>
+          <button class="btn-sub" id="copyPersonalUrlBtn">自分用URLをコピー</button>
+        </div>
+        <div class="status" id="connectStatus">Firebase設定前です。</div>
+        <div style="height:14px"></div>
+        <div class="note">
+          URL例: <code class="inline">?room=newyear2027&me=ピル</code><br />
+          このURLで開くと、ピルのボタンだけが表示されます。
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <h2 class="section-title">ランキング</h2>
+        <p class="section-sub">全員の順位は見えます。</p>
+        <div class="ranking-list" id="rankingList"></div>
+      </div>
+
+      <div class="card">
+        <h2 class="section-title">発見履歴</h2>
+        <p class="section-sub">だれがいつ見つけたかを表示します。</p>
+        <div class="history-list" id="historyList"></div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+    import {
+      getFirestore,
+      doc,
+      getDoc,
+      setDoc,
+      onSnapshot,
+      updateDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "REPLACE_ME",
+      authDomain: "REPLACE_ME",
+      projectId: "REPLACE_ME",
+      storageBucket: "REPLACE_ME",
+      messagingSenderId: "REPLACE_ME",
+      appId: "REPLACE_ME"
+    };
+
+    const DEFAULT_ROOM = "newyear2027";
+    const ROOM_STORAGE_KEY = "kadomatsu-personal-room";
+    const SELF_STORAGE_KEY = "kadomatsu-personal-self";
+    const ROOM_COLLECTION = "kadomatsuRooms";
+    const MAX_HISTORY = 50;
+    const DEFAULT_PLAYER_NAMES = ["ピル", "ミーミー", "タクロ"];
+
+    const ui = {
+      totalScore: document.getElementById("totalScore"),
+      playerCount: document.getElementById("playerCount"),
+      leaderName: document.getElementById("leaderName"),
+      personalArea: document.getElementById("personalArea"),
+      roomId: document.getElementById("roomId"),
+      selfName: document.getElementById("selfName"),
+      connectBtn: document.getElementById("connectBtn"),
+      copyPersonalUrlBtn: document.getElementById("copyPersonalUrlBtn"),
+      connectStatus: document.getElementById("connectStatus"),
+      rankingList: document.getElementById("rankingList"),
+      historyList: document.getElementById("historyList")
+    };
+
+    const appState = {
+      app: null,
+      db: null,
+      roomRef: null,
+      roomId: "",
+      selfName: "",
+      unsubscribe: null,
+      current: {
+        players: [],
+        lastScorerId: null,
+        history: []
+      }
+    };
+
+    bootstrap();
+
+    function bootstrap() {
+      populateSelfOptions();
+      setInitialValues();
+      bindEvents();
+      initializeFirebase();
+      if (getRoomFromUrl() && getSelfFromUrl() && appState.db) {
+        connectRoom().catch(handleError);
+      }
+    }
+
+    function populateSelfOptions() {
+      ui.selfName.innerHTML = '<option value="">自分を選ぶ</option>';
+      DEFAULT_PLAYER_NAMES.forEach((name) => {
+        const option = document.createElement("option");
+        option.value = name;
+        option.textContent = name;
+        ui.selfName.appendChild(option);
+      });
+    }
+
+    function setInitialValues() {
+      const roomFromUrl = getRoomFromUrl();
+      const roomFromLocal = sanitizeRoomId(localStorage.getItem(ROOM_STORAGE_KEY) || "");
+      ui.roomId.value = roomFromUrl || roomFromLocal || DEFAULT_ROOM;
+
+      const selfFromUrl = getSelfFromUrl();
+      const selfFromLocal = localStorage.getItem(SELF_STORAGE_KEY) || "";
+      const initialSelf = selfFromUrl || selfFromLocal || "";
+      if (DEFAULT_PLAYER_NAMES.includes(initialSelf)) {
+        ui.selfName.value = initialSelf;
+      }
+    }
+
+    function bindEvents() {
+      ui.connectBtn.addEventListener("click", () => connectRoom().catch(handleError));
+      ui.copyPersonalUrlBtn.addEventListener("click", () => copyPersonalUrl().catch(handleError));
+      ui.roomId.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") connectRoom().catch(handleError);
+      });
+      ui.selfName.addEventListener("change", () => {
+        localStorage.setItem(SELF_STORAGE_KEY, ui.selfName.value);
+      });
+      ui.personalArea.addEventListener("click", (e) => handlePersonalAction(e).catch(handleError));
+    }
+
+    function initializeFirebase() {
+      try {
+        appState.app = initializeApp(firebaseConfig);
+        appState.db = getFirestore(appState.app);
+        setStatus("Firebase初期化OK。部屋と自分を選んで接続してください。", true);
+      } catch (error) {
+        console.error(error);
+        setStatus("Firebase設定前です。firebaseConfigを書き換えてください。", false);
+      }
+    }
+
+    async function connectRoom() {
+      ensureFirebaseReady();
+
+      const roomId = sanitizeRoomId(ui.roomId.value);
+      const selfName = sanitizeSelfName(ui.selfName.value);
+      if (!roomId) {
+        alert("部屋コードを入れてください。");
+        return;
+      }
+      if (!selfName) {
+        alert("自分の名前を選んでください。");
+        return;
+      }
+
+      appState.roomId = roomId;
+      appState.selfName = selfName;
+      appState.roomRef = doc(appState.db, ROOM_COLLECTION, roomId);
+
+      localStorage.setItem(ROOM_STORAGE_KEY, roomId);
+      localStorage.setItem(SELF_STORAGE_KEY, selfName);
+      window.history.replaceState(null, "", buildPersonalUrl(roomId, selfName));
+
+      await ensureRoomDocument(appState.roomRef, roomId);
+      subscribeRoom(appState.roomRef, roomId);
+    }
+
+    async function ensureRoomDocument(roomRef, roomId) {
+      const snap = await getDoc(roomRef);
+      if (!snap.exists()) {
+        await setDoc(roomRef, buildDefaultRoomDocument(roomId));
+        return;
+      }
+
+      const data = snap.data() || {};
+      const updates = {};
+      if (!Array.isArray(data.players) || data.players.length === 0) {
+        updates.players = createDefaultPlayers();
+      }
+      if (!Array.isArray(data.history)) {
+        updates.history = [];
+      }
+      if (!("lastScorerId" in data)) {
+        updates.lastScorerId = null;
+      }
+      if (Object.keys(updates).length > 0) {
+        updates.updatedAt = serverTimestamp();
+        await updateDoc(roomRef, updates);
+      }
+    }
+
+    function subscribeRoom(roomRef, roomId) {
+      if (appState.unsubscribe) appState.unsubscribe();
+      appState.unsubscribe = onSnapshot(
+        roomRef,
+        (docSnap) => {
+          const data = docSnap.data() || {};
+          appState.current = {
+            players: Array.isArray(data.players) ? data.players : [],
+            lastScorerId: data.lastScorerId ?? null,
+            history: Array.isArray(data.history) ? data.history : []
+          };
+          syncSelfOptionsFromPlayers();
+          render();
+          setStatus(`部屋「${roomId}」に ${appState.selfName} として接続中です。`, true);
+        },
+        (error) => {
+          console.error(error);
+          setStatus("接続エラー。Firestoreのルールや設定を確認してください。", false);
+        }
+      );
+    }
+
+    function syncSelfOptionsFromPlayers() {
+      const names = appState.current.players.map((player) => player.name);
+      const currentValue = ui.selfName.value;
+      ui.selfName.innerHTML = '<option value="">自分を選ぶ</option>';
+      names.forEach((name) => {
+        const option = document.createElement("option");
+        option.value = name;
+        option.textContent = name;
+        ui.selfName.appendChild(option);
+      });
+      if (names.includes(appState.selfName)) {
+        ui.selfName.value = appState.selfName;
+      } else if (names.includes(currentValue)) {
+        ui.selfName.value = currentValue;
+      }
+    }
+
+    async function handlePersonalAction(event) {
+      const button = event.target.closest("button[data-action]");
+      if (!button) return;
+      ensureConnected();
+
+      const action = button.dataset.action;
+      const players = appState.current.players.map((player) => ({ ...player }));
+      const target = players.find((player) => player.name === appState.selfName);
+      if (!target) {
+        alert("この部屋に自分の参加者データがありません。");
+        return;
+      }
+
+      let history = [...appState.current.history];
+      let lastScorerId = appState.current.lastScorerId;
+
+      if (action === "add") {
+        target.score += 1;
+        lastScorerId = target.id;
+        history = addHistoryItem(history, { type: "add", playerId: target.id, playerName: target.name });
+      } else if (action === "sub") {
+        target.score = Math.max(0, target.score - 1);
+        history = addHistoryItem(history, { type: "sub", playerId: target.id, playerName: target.name });
+      } else {
+        return;
+      }
+
+      await saveRoomState({ players, lastScorerId, history });
+    }
+
+    async function saveRoomState(partial) {
+      ensureConnected();
+      await updateDoc(appState.roomRef, {
+        ...partial,
+        updatedAt: serverTimestamp()
+      });
+    }
+
+    async function copyPersonalUrl() {
+      const roomId = sanitizeRoomId(ui.roomId.value);
+      const selfName = sanitizeSelfName(ui.selfName.value);
+      if (!roomId || !selfName) {
+        alert("部屋コードと自分の名前を設定してください。");
+        return;
+      }
+      const url = `${location.origin}${location.pathname}${buildPersonalUrl(roomId, selfName)}`;
+      try {
+        await navigator.clipboard.writeText(url);
+        setStatus(`自分用URLをコピーしました: ${selfName}`, true);
+      } catch {
+        prompt("このURLをコピーしてください", url);
+      }
+    }
+
+    function buildPersonalUrl(roomId, selfName) {
+      return `?room=${encodeURIComponent(roomId)}&me=${encodeURIComponent(selfName)}`;
+    }
+
+    function render() {
+      renderSummary();
+      renderPersonalArea();
+      renderRanking();
+      renderHistory();
+    }
+
+    function renderSummary() {
+      const players = appState.current.players;
+      const totalScore = players.reduce((sum, player) => sum + Number(player.score || 0), 0);
+      const leaderNames = getLeaderNames(players);
+      ui.totalScore.textContent = totalScore;
+      ui.playerCount.textContent = players.length;
+      ui.leaderName.textContent = leaderNames.length ? leaderNames.join("・") : "まだなし";
+    }
+
+    function renderPersonalArea() {
+      ui.personalArea.innerHTML = "";
+      const players = appState.current.players;
+      const leaderIds = new Set(getLeaderIds(players));
+      const selfPlayer = players.find((player) => player.name === appState.selfName);
+
+      if (!appState.selfName) {
+        ui.personalArea.innerHTML = '<div class="muted-center">自分の名前を選んで接続してください。</div>';
+        return;
+      }
+
+      if (!selfPlayer) {
+        ui.personalArea.innerHTML = `<div class="muted-center">この部屋に「${escapeHtml(appState.selfName)}」はまだいません。</div>`;
+        return;
+      }
+
+      const isLeader = leaderIds.has(selfPlayer.id);
+      const isLastScorer = appState.current.lastScorerId === selfPlayer.id;
+      const card = document.createElement("div");
+      card.className = `player${isLastScorer ? " flash" : ""}`;
+      card.innerHTML = `
+        <div class="player-head">
+          <div>
+            <div class="name-row">
+              <div class="name">${escapeHtml(selfPlayer.name)}</div>
+              ${isLeader ? '<div class="tag top">門松王</div>' : ''}
+              ${isLastScorer ? '<div class="tag">いま見つけた！</div>' : ''}
+            </div>
+            <div class="score">${Number(selfPlayer.score || 0)}</div>
+            <div class="score-label">あなたのポイント</div>
+          </div>
+        </div>
+        <div class="field-row">
+          <button class="btn-main" data-action="add">🎍 ${escapeHtml(selfPlayer.name)} +1</button>
+          <button class="btn-sub" data-action="sub">1つ戻す</button>
+        </div>
+      `;
+      ui.personalArea.appendChild(card);
+    }
+
+    function renderRanking() {
+      ui.rankingList.innerHTML = "";
+      const ranking = [...appState.current.players].sort((a, b) => Number(b.score || 0) - Number(a.score || 0));
+      if (ranking.length === 0) {
+        ui.rankingList.innerHTML = '<div class="muted-center">まだ参加者がいません。</div>';
+        return;
+      }
+      ranking.forEach((player, index) => {
+        const row = document.createElement("div");
+        row.className = "ranking-item";
+        row.innerHTML = `
+          <div style="display:flex; gap:12px; align-items:center;">
+            <div class="rank-badge">${index + 1}</div>
+            <div>
+              <div class="history-main">${escapeHtml(player.name)}</div>
+              <div class="mini">${index === 0 && Number(player.score || 0) > 0 ? '門松王' : ' '}</div>
+            </div>
+          </div>
+          <div style="font-size:28px; font-weight:900;">${Number(player.score || 0)}</div>
+        `;
+        ui.rankingList.appendChild(row);
+      });
+    }
+
+    function renderHistory() {
+      ui.historyList.innerHTML = "";
+      const historyItems = appState.current.history;
+      if (historyItems.length === 0) {
+        ui.historyList.innerHTML = '<div class="muted-center">まだ履歴はありません。</div>';
+        return;
+      }
+      historyItems.forEach((item, index) => {
+        const row = document.createElement("div");
+        row.className = "history-item";
+        row.innerHTML = `
+          <div>
+            <div class="history-main">🎍 ${index + 1}本目: ${escapeHtml(formatHistoryText(item))}</div>
+            <div class="mini">${escapeHtml(item.playerName || '')}</div>
+          </div>
+          <div class="history-time">${escapeHtml(formatTime(item.at))}</div>
+        `;
+        ui.historyList.appendChild(row);
+      });
+    }
+
+    function buildDefaultRoomDocument(roomId) {
+      return {
+        roomId,
+        players: createDefaultPlayers(),
+        lastScorerId: null,
+        history: [],
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      };
+    }
+
+    function createDefaultPlayers() {
+      return DEFAULT_PLAYER_NAMES.map((name) => createPlayer(name));
+    }
+
+    function createPlayer(name) {
+      return { id: makeId(), name, score: 0 };
+    }
+
+    function addHistoryItem(history, item) {
+      return [{ id: makeId(), at: new Date().toISOString(), ...item }, ...history].slice(0, MAX_HISTORY);
+    }
+
+    function getLeaderIds(players) {
+      const max = Math.max(0, ...players.map((player) => Number(player.score || 0)));
+      if (max === 0) return [];
+      return players.filter((player) => Number(player.score || 0) === max).map((player) => player.id);
+    }
+
+    function getLeaderNames(players) {
+      const leaderIds = new Set(getLeaderIds(players));
+      return players.filter((player) => leaderIds.has(player.id)).map((player) => player.name);
+    }
+
+    function formatHistoryText(item) {
+      if (item.type === "add") return `${item.playerName} が門松を見つけた`;
+      if (item.type === "sub") return `${item.playerName} のポイントを1つ戻した`;
+      if (item.type === "join") return `${item.playerName} を参加者に追加した`;
+      if (item.type === "remove") return `${item.playerName} を参加者から削除した`;
+      return "更新";
+    }
+
+    function formatTime(iso) {
+      if (!iso) return "";
+      const date = new Date(iso);
+      if (Number.isNaN(date.getTime())) return "";
+      return date.toLocaleString("ja-JP", {
+        month: "numeric",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
+    function getRoomFromUrl() {
+      const params = new URLSearchParams(location.search);
+      return sanitizeRoomId(params.get("room") || "");
+    }
+
+    function getSelfFromUrl() {
+      const params = new URLSearchParams(location.search);
+      return sanitizeSelfName(params.get("me") || "");
+    }
+
+    function sanitizeRoomId(value) {
+      return String(value || "").trim().toLowerCase().replace(/[^a-z0-9_-]/g, "").slice(0, 40);
+    }
+
+    function sanitizeSelfName(value) {
+      const normalized = String(value || "").trim();
+      return DEFAULT_PLAYER_NAMES.includes(normalized) ? normalized : "";
+    }
+
+    function setStatus(message, ok) {
+      ui.connectStatus.textContent = message;
+      ui.connectStatus.className = `status ${ok ? 'ok' : 'ng'}`;
+    }
+
+    function ensureFirebaseReady() {
+      if (!appState.db) {
+        throw new Error("Firebaseが初期化されていません。");
+      }
+    }
+
+    function ensureConnected() {
+      if (!appState.roomRef) {
+        throw new Error("先に接続してください。");
+      }
+    }
+
+    function handleError(error) {
+      console.error(error);
+      const message = error?.message || "エラーが発生しました。";
+      if (message.includes("Firebaseが初期化されていません")) {
+        alert("Firebase設定を確認してください。");
+      } else if (message.includes("先に接続してください")) {
+        alert("先に部屋と自分を設定して接続してください。");
+      } else {
+        alert(message);
+      }
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function makeId() {
+      return Math.random().toString(36).slice(2, 10);
+    }
+  </script>
+</body>
+</html>
