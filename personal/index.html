@@ -256,11 +256,14 @@
           <button class="btn-ok" id="connectBtn">接続</button>
           <button class="btn-sub" id="copyPersonalUrlBtn">自分用URLをコピー</button>
         </div>
+        <div style="height:10px"></div>
+        <button class="btn-danger" id="resetBtn" style="display:none;">部屋のスコアと履歴をリセット</button>
         <div class="status" id="connectStatus">Firebase設定前です。</div>
         <div style="height:14px"></div>
         <div class="note">
           URL例: <code class="inline">?room=newyear2027&me=ピル</code><br />
-          このURLで開くと、ピルのボタンだけが表示されます。
+          管理者URL例: <code class="inline">?room=newyear2027&me=ピル&admin=1</code><br />
+          このURLで開くと、ピルのボタンだけが表示され、管理者だけリセットできます。
         </div>
       </div>
     </div>
@@ -318,6 +321,7 @@ const firebaseConfig = {
       selfName: document.getElementById("selfName"),
       connectBtn: document.getElementById("connectBtn"),
       copyPersonalUrlBtn: document.getElementById("copyPersonalUrlBtn"),
+      resetBtn: document.getElementById("resetBtn"),
       connectStatus: document.getElementById("connectStatus"),
       rankingList: document.getElementById("rankingList"),
       historyList: document.getElementById("historyList")
@@ -329,6 +333,7 @@ const firebaseConfig = {
       roomRef: null,
       roomId: "",
       selfName: "",
+      isAdmin: false,
       unsubscribe: null,
       current: {
         players: [],
@@ -344,6 +349,7 @@ const firebaseConfig = {
       setInitialValues();
       bindEvents();
       initializeFirebase();
+      syncAdminUi();
       if (getRoomFromUrl() && getSelfFromUrl() && appState.db) {
         connectRoom().catch(handleError);
       }
@@ -367,6 +373,7 @@ const firebaseConfig = {
       const selfFromUrl = getSelfFromUrl();
       const selfFromLocal = localStorage.getItem(SELF_STORAGE_KEY) || "";
       const initialSelf = selfFromUrl || selfFromLocal || "";
+      appState.isAdmin = isAdminFromUrl();
       if (DEFAULT_PLAYER_NAMES.includes(initialSelf)) {
         ui.selfName.value = initialSelf;
       }
@@ -375,6 +382,7 @@ const firebaseConfig = {
     function bindEvents() {
       ui.connectBtn.addEventListener("click", () => connectRoom().catch(handleError));
       ui.copyPersonalUrlBtn.addEventListener("click", () => copyPersonalUrl().catch(handleError));
+      ui.resetBtn.addEventListener("click", () => resetRoom().catch(handleError));
       ui.roomId.addEventListener("keydown", (e) => {
         if (e.key === "Enter") connectRoom().catch(handleError);
       });
@@ -411,11 +419,13 @@ const firebaseConfig = {
 
       appState.roomId = roomId;
       appState.selfName = selfName;
+      appState.isAdmin = isAdminFromUrl();
+      syncAdminUi();
       appState.roomRef = doc(appState.db, ROOM_COLLECTION, roomId);
 
       localStorage.setItem(ROOM_STORAGE_KEY, roomId);
       localStorage.setItem(SELF_STORAGE_KEY, selfName);
-      window.history.replaceState(null, "", buildPersonalUrl(roomId, selfName));
+      window.history.replaceState(null, "", buildPersonalUrl(roomId, selfName, appState.isAdmin));
 
       await ensureRoomDocument(appState.roomRef, roomId);
       subscribeRoom(appState.roomRef, roomId);
@@ -529,7 +539,7 @@ const firebaseConfig = {
         alert("部屋コードと自分の名前を設定してください。");
         return;
       }
-      const url = `${location.origin}${location.pathname}${buildPersonalUrl(roomId, selfName)}`;
+      const url = `${location.origin}${location.pathname}${buildPersonalUrl(roomId, selfName, appState.isAdmin)}`;
       try {
         await navigator.clipboard.writeText(url);
         setStatus(`自分用URLをコピーしました: ${selfName}`, true);
@@ -538,8 +548,18 @@ const firebaseConfig = {
       }
     }
 
-    function buildPersonalUrl(roomId, selfName) {
-      return `?room=${encodeURIComponent(roomId)}&me=${encodeURIComponent(selfName)}`;
+    async function resetRoom() {
+      ensureConnected();
+      ensureAdmin();
+      const ok = confirm("この部屋のスコアと履歴をリセットしますか？");
+      if (!ok) return;
+      const players = appState.current.players.map((player) => ({ ...player, score: 0 }));
+      await saveRoomState({ players, lastScorerId: null, history: [] });
+    }
+
+    function buildPersonalUrl(roomId, selfName, isAdmin) {
+      const adminPart = isAdmin ? "&admin=1" : "";
+      return `?room=${encodeURIComponent(roomId)}&me=${encodeURIComponent(selfName)}${adminPart}`;
     }
 
     function render() {
@@ -707,6 +727,11 @@ const firebaseConfig = {
       return sanitizeSelfName(params.get("me") || "");
     }
 
+    function isAdminFromUrl() {
+      const params = new URLSearchParams(location.search);
+      return params.get("admin") === "1";
+    }
+
     function sanitizeRoomId(value) {
       return String(value || "").trim().toLowerCase().replace(/[^a-z0-9_-]/g, "").slice(0, 40);
     }
@@ -714,6 +739,10 @@ const firebaseConfig = {
     function sanitizeSelfName(value) {
       const normalized = String(value || "").trim();
       return DEFAULT_PLAYER_NAMES.includes(normalized) ? normalized : "";
+    }
+
+    function syncAdminUi() {
+      ui.resetBtn.style.display = appState.isAdmin ? "block" : "none";
     }
 
     function setStatus(message, ok) {
@@ -733,6 +762,12 @@ const firebaseConfig = {
       }
     }
 
+    function ensureAdmin() {
+      if (!appState.isAdmin) {
+        throw new Error("管理者だけがリセットできます。");
+      }
+    }
+
     function handleError(error) {
       console.error(error);
       const message = error?.message || "エラーが発生しました。";
@@ -740,6 +775,8 @@ const firebaseConfig = {
         alert("Firebase設定を確認してください。");
       } else if (message.includes("先に接続してください")) {
         alert("先に部屋と自分を設定して接続してください。");
+      } else if (message.includes("管理者だけがリセットできます")) {
+        alert("この操作は管理者だけが実行できます。");
       } else {
         alert(message);
       }
